@@ -23,10 +23,10 @@ uv run course-planner
 
 ## 从 SIS 刷新
 
-1. 首次使用默认浏览器配置时，在项目目录运行 `uv run playwright install chromium`。若使用已安装的 Google Chrome，可在该目录新建 `browser.toml`，写入 `channel = "chrome"`。
+1. 目录和修读记录通过 HTTP 获取。配置账号密码或已有有效 HTTP 会话时可直接刷新。需要人工认证且使用默认 Chromium 时，先运行 `uv run playwright install chromium`。若使用已安装的 Google Chrome，可在该目录新建 `browser.toml`，写入 `channel = "chrome"`。
 2. 要按专业修读计划筛选，准备系统命令 `curl` 和 `pdftotext`。macOS 可通过 `brew install poppler` 安装后者。
 3. 在工作台填写 SIS 学期代码，例如 `2620` 对应 2026–27 第二学期。选择专业范围，或选择所有专业。需要缩小搜索范围时，可填写学科代码，例如 `ECE`。
-4. 点击 **刷新目录与修读记录**。需要认证时，在打开的学校浏览器窗口选择简体中文并登录。两份数据均读取成功后，工作台自动载入结果。
+4. 点击 **刷新目录与修读记录**。需要人工认证时，在打开的学校浏览器窗口选择简体中文并登录。两份数据均读取成功后，工作台自动载入结果。
 
 刷新期间可以继续浏览上一份目录。中断后，以相同条件重新刷新即可从已完成的学科继续。若要重新查询这些学科，勾选 **忽略该查询的旧断点**。成功同步的数据保存在本机 `.planner/`，下次启动时自动恢复，其中包含个人修读记录。
 
@@ -42,7 +42,7 @@ cohort = 2025
 stream = "Computer Engineering"
 ```
 
-账号和密码同时留空可复用登录会话或手动登录，同时填写可自动登录。凭据以明文保存在本机，macOS 或 Linux 上可执行 `chmod 600 profile.toml` 限制访问。专业、四位整数入学年份和方向均可省略。学期在每次查询时指定。
+HTTP 会话按配置文件路径和账号保存在会话目录（默认 `.sis-profile/http/`）。账号和密码同时留空可复用登录会话或手动登录，同时填写可自动登录。凭据以明文保存在本机，macOS 或 Linux 上可执行 `chmod 600 profile.toml` 限制访问。专业、四位整数入学年份和方向均可省略。学期在每次查询时指定。
 
 默认从启动目录读取 `profile.toml` 和 `browser.toml`。使用已有配置时，可通过 `--config-dir` 指定目录，或用 `--profile`、`--browser-config` 分别指定文件。运行 `uv run course-planner --help` 可查看数据目录、端口等选项。
 
@@ -52,3 +52,14 @@ stream = "Computer Engineering"
 - **设置筛选**。可以只看开放班、排除时间待定班、留出空闲日，或设置最早上课时间、最晚下课时间及最短课间。在 **指定教学班** 中锁定想修读的班级。
 - **核对选课要求**。规划器用已通过的课程检查先修，用已通过或本次所选的课程检查同修和排除条件。明确违反的条件会列出原因。缺少修读记录或涉及教师批准等条件时，页面会提示待核实。
 - **比较方案**。讲课与辅导班按 SIS 提供的班号搭配，可选辅导班允许留空。勾选 **仅已核实讲辅配对** 可排除未知配对。使用箭头切换课表，或输入方案编号并按回车跳转。点击课表色块可查看上课日期、教室、教师和班号。
+
+## 自动化验收
+
+运行 `npm ci && npm run build` 编译工作台，再运行 `uv run --locked python -m unittest discover -s tests -v` 检查刷新任务和页面交互。页面测试默认使用本机 Google Chrome。
+
+如需验证真实 SIS 的 HTTP 刷新，在下列命令中指定含登录凭据的配置、已开放的学期和有开课的学科。此测试使用临时会话，从登录一直验证到发布含目录和修读记录的快照，结束后清理测试数据。需要人工认证的账号无法完成此项无人值守验收。
+
+```sh
+SIS_ACCEPT_PROFILE="$PWD/profile.toml" SIS_ACCEPT_TERM=2620 SIS_ACCEPT_SUBJECT=ECE \
+  uv run --locked python -m unittest discover -s tests -p test_live_refresh.py -v
+```

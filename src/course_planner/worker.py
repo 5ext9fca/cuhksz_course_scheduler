@@ -1,4 +1,5 @@
 """Child process with the scraper's own config directory as its working directory."""
+import argparse
 from dataclasses import replace
 from datetime import datetime, timezone
 from hashlib import sha256
@@ -46,11 +47,11 @@ def refresh(data: Path, pending: Path, request: Refresh, profile_file: str | Non
         emit("catalog", message, completed=len(completed), total=total)
 
     emit("catalog", "正在准备专业修读计划和开课目录")
-    catalog = export_catalog(staging / "catalog.json", profile=profile, term=request.term,
+    catalog = export_catalog(staging / "catalog.json", profile=profile, backend="http", term=request.term,
                              subjects=request.subjects or None, restart=request.restart, browser_file=browser_file,
                              on_status=catalog_status)
     emit("history", "正在读取个人修读记录")
-    history = export_courses(staging / "completed.json", profile=profile, browser_file=browser_file,
+    history = export_courses(staging / "completed.json", profile=profile, backend="http", browser_file=browser_file,
                              on_status=lambda msg: emit("history", msg))
     validate_catalog(catalog)
     if (catalog.get("term") != request.term or history.get("schema_version") != 2
@@ -64,9 +65,16 @@ def refresh(data: Path, pending: Path, request: Refresh, profile_file: str | Non
 
 
 def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("data", type=Path)
+    parser.add_argument("pending", type=Path)
+    parser.add_argument("request")
+    parser.add_argument("profile_file", nargs="?")
+    parser.add_argument("browser_file", nargs="?")
+    args = parser.parse_args()
     try:
-        refresh(Path(sys.argv[1]), Path(sys.argv[2]), Refresh.model_validate_json(sys.argv[3]),
-                sys.argv[4] or None, sys.argv[5] or None)
+        refresh(args.data, args.pending, Refresh.model_validate_json(args.request),
+                args.profile_file or None, args.browser_file or None)
     except KeyboardInterrupt:
         sys.exit(130)
     except ScheduleError as exc:
@@ -81,11 +89,11 @@ def main():
         elif "closed" in text.lower():
             message = "浏览器或 SIS 页面已关闭。请确认项目 Chrome 窗口可用后重试。"
         else:
-            message = "请检查学校页面和浏览器配置后重试。"
+            message = "请检查 SIS 网络连接，若正在人工认证，请检查登录窗口后重试。"
         emit("error", f"{step}：{message}")
         sys.exit(1)
     except Exception as exc:
-        emit("error", f"刷新失败（{type(exc).__name__}）。请检查浏览器配置、学校连接和本地数据目录。")
+        emit("error", f"刷新失败（{type(exc).__name__}）。请检查学校连接和本地数据目录。")
         sys.exit(1)
 
 

@@ -59,9 +59,13 @@ export function connectSync(apply:(catalog:unknown,history:unknown)=>void) {
       if(state.version && state.version!==loaded){
         const snapshot=await api<Snapshot>('snapshot');
         if(mine!==sequence)return;
-        apply(snapshot.catalog,snapshot.history);
+        try {
+          apply(snapshot.catalog,snapshot.history);
+          node('snapshotDate').textContent='上次同步 '+new Date(snapshot.updated_at).toLocaleString('zh-CN');
+        } catch(error) {
+          node('snapshotDate').textContent='已保存的快照无法使用。'+errorText(error);
+        }
         loaded=state.version;
-        node('snapshotDate').textContent='上次同步 '+new Date(snapshot.updated_at).toLocaleString('zh-CN');
       }
     } catch(error) {if(mine===sequence)status.textContent='读取本地服务失败。'+errorText(error);}
     finally {if(mine===sequence)timer=window.setTimeout(poll,busy(active)?700:4500);}

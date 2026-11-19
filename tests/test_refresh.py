@@ -67,7 +67,8 @@ class WorkerTests(unittest.TestCase):
     def test_scope_progress_and_paired_publication(self):
         profile = Profile("test-user", "test-password", "Original", 2024, "old")
         events = []
-        def fetch_catalog(path, *, profile, term, subjects, on_status, restart, browser_file):
+        def fetch_catalog(path, *, profile, term, subjects, on_status, restart, browser_file, backend):
+            self.assertEqual(backend, "http")
             self.assertEqual((profile.major, profile.cohort, profile.stream), ("ECE", 2025, "CE"))
             self.assertEqual(subjects, ["ECE"])
             self.assertTrue(restart)
@@ -109,6 +110,7 @@ class WorkerTests(unittest.TestCase):
                  patch("course_planner.worker.emit"):
                 refresh(root, root/"job.pending", Refresh(term="2620"), str(profile), str(browser))
                 for export in (cat, hist):
+                    self.assertEqual(export.call_args.kwargs["backend"], "http")
                     self.assertEqual(export.call_args.kwargs["profile"], Profile.load(profile))
                     self.assertEqual(export.call_args.kwargs["browser_file"], str(browser))
             for invalid in ('username="example"', 'term="2620"', 'cohort="2025"'):

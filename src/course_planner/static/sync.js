@@ -50,9 +50,14 @@ export function connectSync(apply) {
                 const snapshot = await api('snapshot');
                 if (mine !== sequence)
                     return;
-                apply(snapshot.catalog, snapshot.history);
+                try {
+                    apply(snapshot.catalog, snapshot.history);
+                    node('snapshotDate').textContent = '上次同步 ' + new Date(snapshot.updated_at).toLocaleString('zh-CN');
+                }
+                catch (error) {
+                    node('snapshotDate').textContent = '已保存的快照无法使用。' + errorText(error);
+                }
                 loaded = state.version;
-                node('snapshotDate').textContent = '上次同步 ' + new Date(snapshot.updated_at).toLocaleString('zh-CN');
             }
         }
         catch (error) {

@@ -261,7 +261,7 @@ $('prev').onclick=()=>go(rank-1n);$('next').onclick=()=>go(rank+1n);
 $('rank').onchange=()=>{const v=$('rank').value.trim();if(/^\d+$/.test(v))go(BigInt(v));else $('rank').value=String(rank);};
 $('rank').onkeydown=e=>{if(e.key==='Enter')$('rank').blur();};
 $('help').onclick=()=>modal('使用说明',[
-  '填写查询学期，选择专业范围后点击「刷新目录与修读记录」。学校要求登录时请在 scraper 打开的学校页面完成登录。刷新过程中仍可在原目录排课。',
+  '填写查询学期，选择专业范围后点击「刷新目录与修读记录」。通过 HTTP 获取数据；如需人工认证，请在打开的学校页面完成登录。刷新过程中仍可在原目录排课。',
   '点击「导入目录」打开 sis-catalog 导出的学期 JSON（含专业筛选的目录也可）。新目录从空选课开始，文件只在本地浏览器中读取。',
   '可选导入 sis-export 的 completed.json。已注册或已完成且成绩为 A 至 D（含正负号）、P、PA、Pass、DI 或 Distinction 的课程计为已修。已修课程默认从目录中隐藏，取消「隐藏已修」即可选择重修。两种文件可以按任意顺序导入。',
   '每门已选课都要修读。讲课与辅导班遵守 SIS 列出的必选、可选和允许班号，其他教学组成各选一班。未知配对暂按一讲一辅计算，可勾选「仅已核实讲辅配对」排除待确认组合。',
