@@ -1,0 +1,8 @@
+---
+description: 与 cuhksz_sis_scraper 共享用户配置约定
+alwaysApply: true
+---
+
+使用 scraper 的 Profile.load 读取 profile.toml，以其字段和校验为准。当前字段为 username、password、major、cohort、stream。账号密码同时填写或同时留空；cohort 为四位整数。学期由查询请求指定，浏览器选项放在 browser.toml。
+默认从启动目录读取配置；--config-dir 可切换默认查找目录，--profile 与 --browser-config 可分别指定文件。界面预览与后台刷新使用同一份配置。网页只接收专业、入学年份和方向。
+同步配置变更时一并更新示例、CLI、界面和用户指南。仓库只分发空凭据示例，个人 profile.toml 加入 Git 忽略规则。

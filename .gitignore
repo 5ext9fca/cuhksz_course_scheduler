@@ -1,0 +1,7 @@
+.venv/
+node_modules/
+__pycache__/
+.planner/
+profile.toml
+.sis-profile/
+*.pyc

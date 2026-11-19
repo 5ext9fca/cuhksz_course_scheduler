@@ -1,0 +1,8 @@
+{
+  "compilerOptions": {
+    "outDir": "src/course_planner/static", "rootDir": "frontend",
+    "target": "ES2022", "module": "ES2022", "strict": true,
+    "lib": ["DOM", "ES2022"], "noEmitOnError": true
+  },
+  "include": ["frontend/**/*.ts"]
+}

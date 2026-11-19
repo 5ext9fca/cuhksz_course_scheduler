@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>序课 · 港中深排课工作台</title>
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<header><div class="bar"><span class="mark" aria-hidden="true"><i></i><i></i><i></i></span><strong class="brand">序课</strong><small>CUHK(SZ) · 课程规划</small><button id="help">使用说明</button></div></header>
+<main>
+<div class="intro"><div><h1>排课工作台</h1><p class="meta" id="catalogMeta">选择学期刷新 SIS，或导入本地目录</p></div><div class="import-actions"><button id="historyBtn">导入修读记录</button><input id="historyFile" type="file" accept=".json,application/json" hidden><button id="importBtn">↑ 导入目录</button><input id="file" type="file" accept=".json,application/json" hidden></div></div>
+<p role="alert" class="notice" id="importError"></p>
+<section class="card sync-panel" aria-label="SIS 数据刷新">
+<form id="syncForm">
+<div class="sync-heading"><h2>SIS 数据刷新</h2><span class="subtle" id="profileLabel"></span></div>
+<div class="sync-fields">
+<label>查询学期<input name="term" id="syncTerm" placeholder="如 2620" pattern="[0-9]{4}" inputmode="numeric" required></label>
+<label>查询范围<select name="scope" id="syncScope"><option value="profile">使用本机专业配置</option><option value="custom">指定专业与入学年份</option><option value="all">所有专业</option></select></label>
+<label>学科（可选）<input name="subjects" placeholder="如 CSC, ECE"></label>
+<div class="sync-buttons"><button type="submit" class="primary" id="syncStart">刷新目录与修读记录</button><button type="button" id="syncCancel" hidden>取消刷新</button></div>
+</div>
+<div class="sync-fields" id="customFields" hidden><label>专业<input name="major" placeholder="电子与计算机工程"></label><label>入学年份<input name="cohort" type="number" min="1000" max="9999" placeholder="如 2025"></label><label>方向（可选）<input name="stream" placeholder="如 Computer Engineering"></label></div>
+<label class="subtle restart"><input name="restart" type="checkbox"> 忽略该查询的旧断点，重新抓取</label>
+</form>
+<div class="sync-status"><span id="syncStatus" role="status">正在连接本地服务…</span><progress id="syncProgress" hidden></progress><span id="snapshotDate" class="subtle"></span></div>
+</section>
+<div class="layout">
+<aside class="card"><div class="padded catalog-head"><div class="row between"><h2>课程目录</h2><span class="subtle" id="catalogCount"></span></div><input id="search" class="search" type="search" aria-label="搜索课程或教师" placeholder="搜索课号、课程名或教师"><select id="requirement" aria-label="修读要求" class="search" hidden></select><div class="row catalog-tools"><select id="subject" aria-label="学科"><option value="">全部学科</option></select><button id="onlySelected" aria-pressed="false">仅看已选</button></div><div id="historyTools" class="history-tools" hidden><button id="historyList" class="text-button"></button><label><input id="hidePassed" type="checkbox" checked>隐藏已修</label></div></div><div id="courseList" class="course-list"></div></aside>
+<div class="maincol">
+<div class="card selection" id="selection"></div>
+<details class="card filters" id="filters"><summary><strong>排课筛选</strong><span class="subtle" id="filterSummary"></span></summary><div class="filterbody">
+<div class="fieldrow"><label><input type="checkbox" id="openOnly">仅开放班</label><label><input type="checkbox" id="knownOnly" checked>排除时间待定班</label><label><input type="checkbox" id="verifiedOnly">仅已核实讲辅配对</label></div>
+<div class="fieldrow"><label>最早上课 <input type="time" id="earliest"></label><label>最晚下课 <input type="time" id="latest"></label><label>课间至少 <select id="gap"><option value="0">0 分钟</option><option>10</option><option>20</option><option>30</option><option>40</option><option>60</option></select></label></div>
+<div class="fieldrow"><span class="subtle">留作空闲日</span><div class="days" id="freeDays"></div></div>
+<div id="pins"></div></div></details>
+<section class="card"><div class="planhead"><div><h2>每周课表</h2><p class="subtle" id="result" role="status"></p></div><div class="nav" id="nav" hidden><button id="prev" aria-label="上一个方案">‹</button><input class="jump" id="rank" inputmode="numeric" aria-label="跳至方案编号" title="输入方案编号，按回车跳转"><button id="next" aria-label="下一个方案">›</button></div></div>
+<div id="eligibility" aria-live="polite" style="padding-inline:18px"></div><div id="preview"></div></section>
+<p class="foot">按 SIS 讲辅配对和实际授课日期排课。配对未知的方案会列出对应讲课班。先修与注册资格以 SIS 为准。</p>
+</div></div></main>
+<dialog id="dialog"><h2 id="dialogTitle"></h2><div id="dialogContent"></div><form method="dialog"><button class="primary">关闭</button></form></dialog>
+<script type="module" src="/app.js"></script></body></html>

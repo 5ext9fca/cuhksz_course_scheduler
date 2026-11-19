@@ -1,0 +1,7 @@
+{
+  "name": "cuhksz-course-planner-ui",
+  "private": true,
+  "type": "module",
+  "scripts": {"build": "tsc --project tsconfig.json"},
+  "devDependencies": {"typescript": "~5.9.3"}
+}
