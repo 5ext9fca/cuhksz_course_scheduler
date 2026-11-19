@@ -73,7 +73,7 @@ dependencies = [
 
 [package.metadata]
 requires-dist = [
-    { name = "cuhksz-sis-scraper", editable = "../sis_scrawler" },
+    { name = "cuhksz-sis-scraper", git = "https://github.com/5ext9fca/cuhksz_sis_scraper.git?rev=a88c4e98fb5df6a1e6e19b81516723b86fdae287" },
     { name = "fastapi", specifier = ">=0.115,<1" },
     { name = "filelock", specifier = ">=3.13,<4" },
     { name = "uvicorn", specifier = ">=0.30,<1" },
@@ -82,19 +82,11 @@ requires-dist = [
 [[package]]
 name = "cuhksz-sis-scraper"
 version = "0.1.0"
-source = { editable = "../sis_scrawler" }
+source = { git = "https://github.com/5ext9fca/cuhksz_sis_scraper.git?rev=a88c4e98fb5df6a1e6e19b81516723b86fdae287#a88c4e98fb5df6a1e6e19b81516723b86fdae287" }
 dependencies = [
     { name = "beautifulsoup4" },
     { name = "filelock" },
     { name = "playwright" },
-]
-
-[package.metadata]
-requires-dist = [
-    { name = "beautifulsoup4", specifier = ">=4.12,<5" },
-    { name = "filelock", specifier = ">=3.13,<4" },
-    { name = "playwright", specifier = ">=1.51,<2" },
-    { name = "tomli", marker = "python_full_version < '3.11'", specifier = ">=2" },
 ]
 
 [[package]]
